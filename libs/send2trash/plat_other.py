@@ -74,7 +74,6 @@ def info_for(src, topdir):
         src = op.abspath(src)
     else:
         src = op.relpath(src, topdir)
-
     info  = "[Trash Info]\n"
     info += "Path=" + quote(src) + "\n"
     info += "DeletionDate=" + format_date(datetime.now()) + "\n"
@@ -90,20 +89,17 @@ def trash_move(src, dst, topdir=None):
     filespath = op.join(dst, FILES_DIR)
     infopath = op.join(dst, INFO_DIR)
     base_name, ext = op.splitext(filename)
-
     counter = 0
     destname = filename
     while op.exists(op.join(filespath, destname)) or op.exists(op.join(infopath, destname + INFO_SUFFIX)):
         counter += 1
         destname = base_name + b' ' + text_type(counter).encode('ascii') + ext
-
     check_create(filespath)
     check_create(infopath)
-
-    os.rename(src, op.join(filespath, destname))
     f = open(op.join(infopath, destname + INFO_SUFFIX), 'w')
     f.write(info_for(src, topdir))
     f.close()
+    os.rename(src, op.join(filespath, destname))
 
 def find_mount_point(path):
     # Even if something's wrong, "/" is a mount point, so the loop will exit.
@@ -119,13 +115,11 @@ def find_ext_volume_global_trash(volume_root):
     trash_dir = op.join(volume_root, TOPDIR_TRASH)
     if not op.exists(trash_dir):
         return None
-
     mode = os.lstat(trash_dir).st_mode
     # vol/.Trash must be a directory, cannot be a symlink, and must have the
     # sticky bit set.
     if not op.isdir(trash_dir) or op.islink(trash_dir) or not (mode & stat.S_ISVTX):
         return None
-
     trash_dir = op.join(trash_dir, text_type(uid).encode('ascii'))
     try:
         check_create(trash_dir)
@@ -165,7 +159,6 @@ def send2trash(path):
         return send2trash(path.__fspath__())
     else:
         raise TypeError('str, bytes or PathLike expected, not %r' % type(path))
-
     if not op.exists(path_b):
         raise OSError("File not found: %s" % path)
     # ...should check whether the user has the necessary permissions to delete
@@ -175,11 +168,9 @@ def send2trash(path):
     # if the file to be trashed is on the same device as HOMETRASH we
     # want to move it there.
     path_dev = get_dev(path_b)
-
     # If XDG_DATA_HOME or HOMETRASH do not yet exist we need to stat the
     # home directory, and these paths will be created further on if needed.
     trash_dev = get_dev(op.expanduser(b'~'))
-
     if path_dev == trash_dev:
         topdir = XDG_DATA_HOME
         dest_trash = HOMETRASH_B

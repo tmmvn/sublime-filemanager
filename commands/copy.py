@@ -10,7 +10,6 @@ class FmCopyCommand(FmWindowCommand):
     def run(self, which, paths=None):
         text = []
         folders = self.window.folders()
-
         for path in paths or [self.window.active_view().file_name()]:
             if which == "name":
                 text.append(os.path.basename(path))
@@ -27,5 +26,4 @@ class FmCopyCommand(FmWindowCommand):
                         norm_path = os.path.relpath(path, folder)
                         text.append("/" + norm_path.replace(os.path.sep, "/"))
                         break
-
         sublime.set_clipboard("\n".join(text))

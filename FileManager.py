@@ -1,6 +1,5 @@
 # -*- encoding: utf-8 -*-
 import sys
-
 import sublime
 import sublime_plugin
 
@@ -31,24 +30,6 @@ from .commands.rename import FmRenameCommand, FmRenamePathCommand
 
 def plugin_loaded():
     settings = sublime.load_settings("FileManager.sublime-settings")
-    # this use to be a supported setting, but we dropped it. (see #27)
-    if settings.get("auto_close_empty_groups") is not None:
-        # we could remove the setting automatically, and install the
-        # package if it was set to true, but it'd be an extra source
-        # of bugs, and it doesn't take that much effort (it's a one
-        # time thing, so it doesn't need to be automated)
-        sublime.error_message(
-            "FileManager\n\n"
-            "auto_close_empty_groups is set, but this setting is no longer "
-            "supported.\n\n"
-            "Auto closing empty groups (in the layout) use to be a feature "
-            "of FileManager, but it has now moved to it's own package.\n\n"
-            "If you still want this behaviour, you can install "
-            "AutoCloseEmptyGroup, it's available on package control.\n\n"
-            "To disable this warning, unset the setting "
-            "auto_close_empty_groups in FileManager.sublime-settings (search "
-            "for Preferences: FileManager Settings in the command palette)"
-        )
 
 
 class FmEditReplace(sublime_plugin.TextCommand):
@@ -78,29 +59,23 @@ class FmListener(sublime_plugin.EventListener):
             or view.name() != "FileManager::input-for-path"
         ):
             return
-
         settings = view.settings()
-
         if command == "unindent":
             index = settings.get("completions_index")
             settings.set("go_backwards", True)
             view.run_command("insert", {"characters": "\t"})
             return
-
         # command_history: (command, args, times)
         first = view.command_history(0)
         if first[0] != "fm_edit_replace" or first[2] != 1:
             return
-
         second = view.command_history(-1)
         if (second[0] != "reindent") and not (
             second[0] == "insert" and second[1] == {"characters": "\t"}
         ):
             return
-
         settings.set("ran_undo", True)
         view.run_command("undo")
-
         index = settings.get("completions_index")
         if index == 0 or index is None:
             settings.erase("completions")
