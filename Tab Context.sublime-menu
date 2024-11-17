@@ -1,6 +1,4 @@
 [
-    { "caption": "-", "id": "file" },
-    { "caption": "Open In Browser", "command": "fm_open_in_browser" },
     { "caption": "-", "id": "file_manager" },
     { "caption": "Rename...", "command": "fm_rename_path" },
     { "caption": "Move...", "command": "fm_move" },
